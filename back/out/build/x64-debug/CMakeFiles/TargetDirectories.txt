@@ -1,0 +1,3 @@
+C:/Users/dawid/source/repos/slash/out/build/x64-debug/CMakeFiles/NetworkApp.dir
+C:/Users/dawid/source/repos/slash/out/build/x64-debug/CMakeFiles/edit_cache.dir
+C:/Users/dawid/source/repos/slash/out/build/x64-debug/CMakeFiles/rebuild_cache.dir
