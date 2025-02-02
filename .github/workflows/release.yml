@@ -48,13 +48,11 @@ jobs:
           name: electron-build
           path: release/
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v1.0.${{ github.run_number }}
-          name: "Release v1.0.${{ github.run_number }}"
-          draft: false
-          prerelease: false
-          files: release/*.exe # Change based on your platform (e.g., .dmg for Mac, .AppImage for Linux)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v1.0.6
+        files: release/*.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
