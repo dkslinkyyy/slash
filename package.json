@@ -19,16 +19,37 @@
     "start": "concurrently \"BROWSER=none react-scripts start\" \"npm run electron-start\"",
     "react-start": "BROWSER=none react-scripts start",
     "electron-start": "wait-on http://localhost:3000 && electron .",
-    "load-scripts": "react-scripts start"
+    "load-scripts": "react-scripts start",
+    "build": "react-scripts build",
+    "electron:build": "electron-builder"
   },
   "build": {
-    "appId": "com.example.myapp",
+    "appId": "com.yourcompany.appname",
+    "productName": "YourApp",
     "files": [
       "build/**/*",
-      "electron/**/*"
+      "main.js",
+      "package.json"
     ],
     "directories": {
-      "output": "dist"
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "public/assets/slash-logo-sm.png"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "public/assets/slash-logo-sm.png"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
     }
   },
   "eslintConfig": {
