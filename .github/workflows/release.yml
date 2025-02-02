@@ -1,39 +1,60 @@
-name: Build and Release Electron App
+name: Build and Deploy Electron App
 
 on:
   push:
-    tags:
-      - "v*" # Triggers when a new version tag is pushed (e.g., v1.0.0)
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3 # Use latest version
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18" # Use your preferred Node.js version
+          node-version: 18 # Ensure this matches your local Node.js version
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
 
       - name: Build React app
-        run: npm run build # Ensure React app is built
+        run: |
+          npm run build
 
-      - name: Build Electron app
-        run: npm run electron:build # Builds the Electron application
+      - name: Package Electron app
+        run: |
+          export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          npm run electron:build
 
-      - name: Upload built installers as artifacts
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: electron-app-artifacts
-          path: release/ # Adjust path if necessary (this is where electron-builder saves output)
+          name: electron-build
+          path: release/ # The directory where electron-builder outputs builds
 
-      - name: Create GitHub Release & Upload Installers
-        uses: softprops/action-gh-release@v1
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
         with:
-          files: release/*.{exe,dmg,AppImage} # Uploads all generated installers
+          name: electron-build
+          path: release/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: "Release v1.0.${{ github.run_number }}"
+          draft: false
+          prerelease: false
+          files: release/*.exe # Change based on your platform (e.g., .dmg for Mac, .AppImage for Linux)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
