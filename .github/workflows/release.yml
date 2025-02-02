@@ -28,7 +28,7 @@ jobs:
         run: npm run electron:build # Builds the Electron application
 
       - name: Upload built installers as artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: electron-app-artifacts
           path: release/ # Adjust path if necessary (this is where electron-builder saves output)
