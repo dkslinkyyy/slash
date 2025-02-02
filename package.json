@@ -5,8 +5,9 @@
   "dependencies": {
     "cra-template": "1.2.0",
     "crypto-js": "^4.2.0",
+    "electron-fetch": "^1.9.1",
+    "node-fetch": "^3.3.2",
     "nth-check": "^2.1.1",
-    "postcss": "^8.4.49",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-scripts": "^5.0.1",
@@ -53,6 +54,7 @@
     "electron": "^33.2.1",
     "electron-builder": "^25.1.8",
     "react-devtools": "^6.0.1",
-    "react-router-dom": "^7.1.1"
+    "react-router-dom": "^7.1.1",
+    "tailwindcss": "^3.4.17"
   }
 }

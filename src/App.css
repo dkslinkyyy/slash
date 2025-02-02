@@ -1,38 +1,203 @@
-.App {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#root,
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: "Ubuntu";
+  font-weight: 400;
+  font-style: normal;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  color: white;
+  background-color: #0f0f0f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+input,
+button,
+textarea {
+  all: unset;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.chat-app {
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  width: 100%;
+  height: 100%;
+  gap: 2vh;
+}
+
+.chat-messages {
+  height: 100%;
+  width: 500px;
+  background-color: #161616;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+  gap: 2vh;
+  padding: 2vh;
+  overflow-y: auto;
+}
+.chat-messages::-webkit-scrollbar {
+  width: 8px; /* Thin scrollbar */
+}
+.chat-messages::-webkit-scrollbar-track {
+  background: #1a1a1a; /* Dark track */
+  border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #444; /* Gray scrollbar */
+  border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #666; /* Lighter on hover */
+}
+
+.chat-input-textarea {
+  background-color: #161616;
+  min-height: 50px;
+  max-height: 250px;
+  height: auto;
+  width: 500px;
+  border-radius: 15px;
+  text-align: left;
+  display: flex;
+  padding: 0 2vh;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  overflow-y: auto;
+}
+
+.message:hover {
+  background-color: #1a1a1a;
+}
+
+.chat-input button {
+  width: 10%;
+}
+
+.message-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1vh;
+}
+.message {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  width: 100%;
+  height: auto;
+  padding: 0 2vh;
+  gap: 1vh;
+  color: #666;
+  border-radius: 5px;
+  transition: all ease 0.1s;
+}
+
+.message-details {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  color: #999;
+}
+
+.message-content {
+  width: 100%;
+  height: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word; /* Ensure long words break properly */
+  word-break: break-word; /* Prevent overflow from long words */
+}
+
+.message-profile-image,
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.profile-image-container {
+  width: 32px; /* Set the desired width */
+  height: 32px; /* Set the desired height */
+  border-radius: 50%; /* Make the container circular */
+  overflow: hidden; /* Hide any overflowing parts of the image */
+  display: inline-block; /* Ensure it stays inline with the text */
+}
+.chat-username {
+  width: 500px;
+  border-radius: 15px;
+  height: 100px;
+  display: flex;
+  padding: 2vh;
+  display: flex;
+  align-items: center;
+  gap: 2vh;
+  justify-content: flex-start;
+}
+
+.chat-username input,
+button {
+  height: 100%;
+  background-color: #161616;
+  padding: 1vh;
+  border-radius: 15px;
+}
+
+.chat-username button:hover {
+  background-color: #1a1a1a;
+  transition: all ease 0.2s;
+}
+.menu-overlay {
+  @apply fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-black bg-opacity-50 z-50; /* Add background overlay with opacity */
+}
+
+.menu-container {
+  @apply fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-screen-sm p-8 z-50; /* Center and size the menu */
+  position: relative; /* Ensure the close button is positioned relative to the container */
+  width: 100vw; /* Ensure container spans full width */
+  height: 100vh; /* Ensure container spans full height */
+  background-color: #0f0f0f;
+}
+
+.close-button {
+  height: 50px;
+  width: 50px;
   color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  border-radius: 50%;
+  background-color: #0f0f0f;
+  position: absolute; /* Position relative to menu-container */
+  top: 10px; /* Adjust as needed */
+  right: 10px; /* Adjust as needed */
+  display: block; /* Make sure it's not hidden */
 }
