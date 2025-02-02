@@ -19,9 +19,8 @@
     "start": "concurrently \"BROWSER=none react-scripts start\" \"npm run electron-start\"",
     "react-start": "BROWSER=none react-scripts start",
     "electron-start": "wait-on http://localhost:3000 && electron .",
-    "load-scripts": "react-scripts start",
     "build": "react-scripts build",
-    "electron:build": "electron-builder"
+    "electron:build": "npm run build && electron-builder --win"
   },
   "build": {
     "appId": "com.yourcompany.appname",

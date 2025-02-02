@@ -51,6 +51,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.6
-          files: release/*.exe
+          files: release/**
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
