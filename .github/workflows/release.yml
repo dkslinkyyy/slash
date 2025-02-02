@@ -1,0 +1,39 @@
+name: Build and Release Electron App
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16" # Set your Node.js version
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Build Electron app
+        run: |
+          npm run build  # Build your React app
+          npm run electron:build  # Build your Electron app using electron-builder
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/* # Path to the built Electron app
+
+      - name: Upload Release to GitHub
+        uses: actions/upload-artifact@v2
+        with:
+          name: electron-release
+          path: release/*
