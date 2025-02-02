@@ -3,7 +3,7 @@ name: Build and Release Electron App
 on:
   push:
     tags:
-      - "v*"
+      - "v*" # Triggers when a new version tag is pushed (e.g., v1.0.0)
 
 jobs:
   build:
@@ -11,29 +11,29 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3 # Use latest version
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: "16" # Set your Node.js version
+          node-version: "18" # Use your preferred Node.js version
 
       - name: Install dependencies
-        run: |
-          npm install
+        run: npm install
+
+      - name: Build React app
+        run: npm run build # Ensure React app is built
 
       - name: Build Electron app
-        run: |
-          npm run build  # Build your React app
-          npm run electron:build  # Build your Electron app using electron-builder
+        run: npm run electron:build # Builds the Electron application
 
-      - name: Create GitHub release
+      - name: Upload built installers as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: electron-app-artifacts
+          path: release/ # Adjust path if necessary (this is where electron-builder saves output)
+
+      - name: Create GitHub Release & Upload Installers
         uses: softprops/action-gh-release@v1
         with:
-          files: release/* # Path to the built Electron app
-
-      - name: Upload Release to GitHub
-        uses: actions/upload-artifact@v2
-        with:
-          name: electron-release
-          path: release/*
+          files: release/*.{exe,dmg,AppImage} # Uploads all generated installers
