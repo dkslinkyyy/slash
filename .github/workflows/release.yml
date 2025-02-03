@@ -18,6 +18,13 @@ jobs:
         with:
           node-version: 18 # Ensure this matches your local Node.js version
 
+      - name: Install Wine (for Windows builds)
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt update
+          sudo apt install wine64 wine32 -y
+          winecfg # This sets up Wine
+
       - name: Install dependencies
         run: |
           npm install
@@ -30,12 +37,11 @@ jobs:
         run: |
           export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
           npm run electron:build
-
-      - name: Upload build artifacts
+      - name: Upload release folder
         uses: actions/upload-artifact@v4
         with:
           name: electron-build
-          path: release/ # The directory where electron-builder outputs builds
+          path: release/ # Point to the entire release folder
 
   release:
     runs-on: ubuntu-latest
@@ -47,10 +53,11 @@ jobs:
         with:
           name: electron-build
           path: release/
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.6
-          files: release/**
+          files: release/ # Use the entire folder instead of just the .zip file
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
