@@ -23,8 +23,8 @@
     "electron:build": "npm run build && electron-builder --win"
   },
   "build": {
-    "appId": "com.yourcompany.appname",
-    "productName": "YourApp",
+    "appId": "se.slash.slashapp",
+    "productName": "Slash",
     "files": [
       "build/**/*",
       "main.js",
