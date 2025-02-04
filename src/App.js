@@ -1,20 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
-import { v4 as uuidv4 } from "uuid"; // Import UUID library
+import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 import ChatMessages from "./components/ChatMessages";
-import SettingsMenu from "./components/menu/SettingsMenu"; // Updated import to SettingsMenu
+import SettingsMenu from "./components/menu/SettingsMenu";
 
 function ChatApp() {
   const [messages, setMessages] = useState([]);
-  const [messageInput, setMessageInput] = useState(""); // For chat message input
-  const [username, setUsername] = useState(""); // For storing the actual username
-  const [profileImage, setProfileImage] = useState("/assets/slash-logo-sm.png"); // For storing the profile image (base64 or URL)
+  const [messageInput, setMessageInput] = useState("");
+  const [username, setUsername] = useState("");
+  const [profileImage, setProfileImage] = useState("/assets/slash-logo-sm.png");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [typingUser, setTypingUser] = useState(""); // Track who is typing
 
   const wsRef = useRef(null);
-  const sentMessageIds = useRef(new Set()); // Store sent message IDs
+  const sentMessageIds = useRef(new Set());
   const messagesEndRef = useRef(null);
-  const textareaRef = useRef(null); // Reference to the textarea
+  const textareaRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -26,8 +28,9 @@ function ChatApp() {
   }, [messages]);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://16.171.141.188:8080/ws");
+    const ws = new WebSocket("ws://localhost:8080/ws");
 
+    console.log(ws);
     wsRef.current = ws;
 
     ws.onopen = () => {
@@ -35,11 +38,21 @@ function ChatApp() {
     };
 
     ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
+      try {
+        const message = JSON.parse(event.data);
 
-      // Ignore messages that the client itself sent
-      if (!sentMessageIds.current.has(message.id)) {
-        setMessages((prev) => [...prev, message]);
+        console.log(message);
+        if (message.type === "typing") {
+          setTypingUser(message.user);
+
+          // Remove typing status after 2 seconds
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = setTimeout(() => setTypingUser(""), 2000);
+        } else {
+          setMessages((prev) => [...prev, message]);
+        }
+      } catch (error) {
+        console.error("Error parsing message:", error);
       }
     };
 
@@ -54,49 +67,51 @@ function ChatApp() {
     return () => ws.close();
   }, []);
 
-  // Auto-resize the textarea on input
   useEffect(() => {
     const textarea = textareaRef.current;
+    if (!textarea) return;
+
     const autoResize = () => {
-      textarea.style.height = "auto"; // Reset height
-      textarea.style.height = `${textarea.scrollHeight}px`; // Set to scrollHeight
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
     };
 
-    if (textarea) {
-      textarea.addEventListener("input", autoResize, false);
-    }
+    textarea.addEventListener("input", autoResize);
 
-    // Clean up event listener
     return () => {
-      if (textarea) {
-        textarea.removeEventListener("input", autoResize);
-      }
+      textarea.removeEventListener("input", autoResize);
     };
   }, []);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      // Prevent default behavior (adding a new line)
+      e.preventDefault();
+
+      // Send the message if it's not empty
+      if (messageInput.trim()) {
+        sendMessage();
+      }
+    }
+    // Allow Shift + Enter to add a new line
+  };
 
   const sendMessage = () => {
     if (!username) {
       alert("Your username is not set");
-      return; // Exit early if username is not set
+      return;
     }
+
     if (wsRef.current && messageInput.trim()) {
       const message = {
-        id: uuidv4(), // Generate a unique ID
-        content: messageInput,
-        sender: username,
-        timestamp: new Date().toISOString(),
-        profileImage: profileImage, // Include the profile image in the message
+        username: username,
+        message: messageInput,
       };
-
-      wsRef.current.send(JSON.stringify(message));
-      sentMessageIds.current.add(message.id); // Store sent message ID
-      setMessages((prev) => [...prev, message]); // No need to reverse manually
-      setMessageInput(""); // Clear the chat message input
+      wsRef.current.send(JSON.stringify(message).trim());
+      sentMessageIds.current.add(message.id);
+      setMessages((prev) => [...prev, message]);
+      setMessageInput("");
     }
-  };
-
-  const handleClose = () => {
-    setIsMenuOpen(false);
   };
 
   return (
@@ -110,7 +125,7 @@ function ChatApp() {
 
       {isMenuOpen && (
         <SettingsMenu
-          onClose={handleClose}
+          onClose={() => setIsMenuOpen(false)}
           username={username}
           setUsername={setUsername}
           profileImage={profileImage}
@@ -121,20 +136,22 @@ function ChatApp() {
       {/* Chat Messages */}
       <ChatMessages messages={messages} messagesEndRef={messagesEndRef} />
 
-      {/* Message Input */}
-      <div className="chat-input">
-        <textarea
-          ref={textareaRef}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              sendMessage(); // Send message when pressing Enter
-            }
-          }}
-          value={messageInput}
-          onChange={(e) => setMessageInput(e.target.value)}
-          placeholder="Type a message..."
-          className="chat-input-textarea"
-        />
+      {/* Chat Input Section */}
+      <div className="chat-input-container">
+        {/* Typing Indicator */}
+        {typingUser && (
+          <div className="typing-indicator">{typingUser} is typing...</div>
+        )}
+        <div className="chat-input">
+          <textarea
+            ref={textareaRef}
+            onKeyDown={handleKeyDown}
+            value={messageInput}
+            onChange={(e) => setMessageInput(e.target.value)}
+            placeholder="Type a message..."
+            className="chat-input-textarea"
+          />
+        </div>
       </div>
     </div>
   );
