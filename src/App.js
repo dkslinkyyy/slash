@@ -28,9 +28,8 @@ function ChatApp() {
   }, [messages]);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080/ws");
+    const ws = new WebSocket("ws:/16.171.141.188:8080/ws");
 
-    console.log(ws);
     wsRef.current = ws;
 
     ws.onopen = () => {
